@@ -1,0 +1,8 @@
+{
+  "url": "https://p2ppro.in",
+  "name": "P2PPro.in",
+  "iconUrl": "https://p2ppro.in/icon.png",
+  "termsOfUseUrl": "https://p2ppro.in/terms",
+  "privacyPolicyUrl": "https://p2ppro.in/privacy",
+  "action": { "ton": { "returnStrategy": "none" } }
+}
