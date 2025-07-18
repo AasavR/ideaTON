@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>P2PPro.in - Decentralized Crypto Exchange</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -52,6 +53,38 @@
   </footer>
 
   <script type="module">
+
+    // ✅ Jetton helper import - must be inside module script
+    import { beginCell, Address } from 'https://esm.sh/@ton/core';
+
+    // Builds payload for Jetton transfer
+    function createJettonPayload(amountTokens, recipient) {
+      return beginCell()
+        .storeUint(0xf8a7ea5, 32) // jetton transfer op code
+        .storeUint(0, 64)         // query id
+        .storeCoins(amountTokens.toString())
+        .storeAddress(Address.parse(recipient))
+        .storeAddress(Address.parse(recipient))
+        .storeUint(0, 1)
+        .endCell()
+        .toBoc({ idx: false })
+        .toString('base64');
+    }
+
+    // Define sendJetton to call TonConnect
+    async function sendJetton(amountTokens, recipientJettonWallet) {
+      const payload = createJettonPayload(amountTokens, recipientJettonWallet);
+      const tx = {
+        validUntil: Math.floor(Date.now() / 1000) + 60,
+        messages: [{
+          address: JETTON_MASTER_ADDRESS, // define this above or dynamically
+          amount: '0',
+          payload
+        }]
+      };
+      // `tonConnect` should be your instance from TonConnectUI setup
+      return await tonConnect.sendTransaction(tx);
+    }
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
